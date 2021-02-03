@@ -143,6 +143,8 @@ import org.whispersystems.signalservice.internal.util.DynamicCredentialsProvider
 import org.whispersystems.signalservice.internal.util.Hex;
 import org.whispersystems.signalservice.internal.util.Util;
 
+import org.json.*;
+
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
@@ -985,11 +987,40 @@ public class Manager implements Closeable {
                 receiptMessage);
     }
 
+    public boolean isJSONValid(String test) {
+        try {
+            new JSONObject(test);
+        } catch (JSONException ex) {
+            try {
+                new JSONArray(test);
+            } catch (JSONException ex1) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public Pair<Long, List<SendMessageResult>> sendMessage(
             String messageText, List<String> attachments, List<String> recipients
     ) throws IOException, AttachmentInvalidException, InvalidNumberException {
-        final SignalServiceDataMessage.Builder messageBuilder = SignalServiceDataMessage.newBuilder()
-                .withBody(messageText);
+        final SignalServiceDataMessage.Builder messageBuilder = SignalServiceDataMessage.newBuilder();
+        if (isJSONValid(messageText)) {
+            System.out.println("is JSON");
+            System.out.println(messageText);
+            JSONObject json = new JSONObject(messageText);
+            if (json.has("type") && json.getString("type") == "STICKER") {
+                System.out.println(json.getString("packId"));
+                System.out.println(json.getString("packKey"));
+                System.out.println(json.getInt("stickerId"));
+                SignalServiceDataMessage.Sticker sticker = new SignalServiceDataMessage.Sticker(Hex.fromStringCondensed(json.getString("packId")), Hex.fromStringCondensed(json.getString("packKey")), json.getInt("stickerId"), null, null);
+                messageBuilder.withSticker(sticker);
+            } else {
+                messageBuilder.withBody("Unsupported JSON");
+            }
+        } else {
+            messageBuilder.withBody(messageText);
+        }
+                
         if (attachments != null) {
             List<SignalServiceAttachment> attachmentStreams = AttachmentUtils.getSignalServiceAttachments(attachments);
 
