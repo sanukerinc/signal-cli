@@ -1025,31 +1025,31 @@ public class Manager implements Closeable {
                 byte[] packKey = Hex.fromStringCondensed(json.getString("packKey"));
                 int stickerId = json.getInt("stickerId");
 
-                File tmpFile = IOUtils.createTempFile();
+                // File tmpFile = IOUtils.createTempFile();
                 try (InputStream input = messageReceiver.retrieveSticker(
                         packId,
                         packKey,
                         stickerId
                     )) {
-                    try(OutputStream outputStream = new FileOutputStream(tmpFile)){
-                        IOUtils.copyStream(input, outputStream);
-                    } catch (IOException e) {
-                        logger.warn("copyStream error",
-                        e.getMessage());
-                        // handle exception here
-                    }
-                    Path path = tmpFile.toPath();
-                    String mimeType = Files.probeContentType(path);
-                    System.out.println(mimeType);
-                    System.out.println(tmpFile.length());
+                    // try(OutputStream outputStream = new FileOutputStream(tmpFile)){
+                    //     IOUtils.copyStream(input, outputStream);
+                    // } catch (IOException e) {
+                    //     logger.warn("copyStream error",
+                    //     e.getMessage());
+                    //     // handle exception here
+                    // }
+                    // Path path = tmpFile.toPath();
+                    // String mimeType = Files.probeContentType(path);
+                    // System.out.println(mimeType);
+                    // System.out.println(tmpFile.length());
 
                     // SignalServiceAttachmentStream attachmentStream = AttachmentUtils.createAttachment(tmpFile);
                     SignalServiceAttachmentStream attachmentStream = SignalServiceAttachment.newStreamBuilder()
                             .withStream(input)
                             .withContentType("image/webp")
-                            .withLength(tmpFile.length())
+                            .withLength(28482)
                             .build();
-                    SignalServiceDataMessage.Sticker sticker = new SignalServiceDataMessage.Sticker(Hex.fromStringCondensed(json.getString("packId")), Hex.fromStringCondensed(json.getString("packKey")), json.getInt("stickerId"), "❤️", attachmentStream);
+                    SignalServiceDataMessage.Sticker sticker = new SignalServiceDataMessage.Sticker(packId, packKey, stickerId, "❤️", attachmentStream);
                     messageBuilder.withSticker(sticker);
                     return sendMessage(messageBuilder, getSignalServiceAddresses(recipients));
                 } catch (InvalidMessageException e) {
