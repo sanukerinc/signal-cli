@@ -1017,18 +1017,18 @@ public class Manager implements Closeable {
                 System.out.println(Hex.fromStringCondensed(json.getString("packId")));
                 System.out.println(Hex.fromStringCondensed(json.getString("packKey")));
                 System.out.println(json.getInt("stickerId"));
-                List<SignalServiceAttachment> attachmentSs = AttachmentUtils.getSignalServiceAttachments(attachments);
-                SignalServiceAttachment firstAttachment = attachmentSs.get(0);
-                List<SignalServiceAttachment> attachmentPs = new ArrayList<>(1);
-                SignalServiceMessageSender mesSender = createMessageSender();
-                if (firstAttachment.isStream()) {
-                    System.out.println("isStream");
-                    attachmentPs.add(mesSender.uploadAttachment(firstAttachment.asStream()));
-                } else if (firstAttachment.isPointer()) {
-                    System.out.println("isPointer");
-                    attachmentPs.add(firstAttachment.asPointer());
-                }
-                SignalServiceDataMessage.Sticker sticker = new SignalServiceDataMessage.Sticker(Hex.fromStringCondensed(json.getString("packId")), Hex.fromStringCondensed(json.getString("packKey")), json.getInt("stickerId"), "❤️", attachmentPs.get(0));
+                // List<SignalServiceAttachment> attachmentSs = AttachmentUtils.getSignalServiceAttachments(attachments);
+                // SignalServiceAttachment firstAttachment = attachmentSs.get(0);
+                // List<SignalServiceAttachment> attachmentPs = new ArrayList<>(1);
+                // SignalServiceMessageSender mesSender = createMessageSender();
+                // if (firstAttachment.isStream()) {
+                //     System.out.println("isStream");
+                //     attachmentPs.add(mesSender.uploadAttachment(firstAttachment.asStream()));
+                // } else if (firstAttachment.isPointer()) {
+                //     System.out.println("isPointer");
+                //     attachmentPs.add(firstAttachment.asPointer());
+                // }
+                SignalServiceDataMessage.Sticker sticker = new SignalServiceDataMessage.Sticker(Hex.fromStringCondensed(json.getString("packId")), Hex.fromStringCondensed(json.getString("packKey")), json.getInt("stickerId"), "❤️", new SignalServiceAttachment());
                 // SignalServiceDataMessage.Sticker sticker = new SignalServiceDataMessage.Sticker(Hex.fromStringCondensed(json.getString("packId")), Hex.fromStringCondensed(json.getString("packKey")), json.getInt("stickerId"), "❤️", null);
                 messageBuilder.withSticker(sticker);
                 return sendMessage(messageBuilder, getSignalServiceAddresses(recipients));
