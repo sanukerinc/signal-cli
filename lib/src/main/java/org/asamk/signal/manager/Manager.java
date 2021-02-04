@@ -1038,6 +1038,11 @@ public class Manager implements Closeable {
                         e.getMessage());
                         // handle exception here
                     }
+                    Path path = tmpFile.toPath();
+                    String mimeType = Files.probeContentType(path);
+                    System.out.println(mimeType);
+                    System.out.println(tmpFile.length());
+
                     SignalServiceAttachmentStream attachmentStream = AttachmentUtils.createAttachment(tmpFile);
                     // SignalServiceAttachmentStream attachmentStream = SignalServiceAttachment.newStreamBuilder()
                     //         .withStream(input)
