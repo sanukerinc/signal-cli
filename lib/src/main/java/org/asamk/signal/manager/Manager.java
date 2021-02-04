@@ -1023,7 +1023,7 @@ public class Manager implements Closeable {
                 SignalServiceMessageSender mesSender = createMessageSender();
                 if (firstAttachment.isStream()) {
                     System.out.println("isStream");
-                    attachmentPs.add(mesSender.uploadAttachment(attachment.asStream()));
+                    attachmentPs.add(mesSender.uploadAttachment(firstAttachment.asStream()));
                 } else if (firstAttachment.isPointer()) {
                     System.out.println("isPointer");
                     attachmentPs.add(firstAttachment.asPointer());
