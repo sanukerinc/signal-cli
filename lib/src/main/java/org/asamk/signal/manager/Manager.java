@@ -1014,6 +1014,10 @@ public class Manager implements Closeable {
             if (json.has("type") && json.getString("type").equals("STICKER")) {
                 byte[] packId = Hex.fromStringCondensed(json.getString("packId"));
                 byte[] packKey = Hex.fromStringCondensed(json.getString("packKey"));
+                String emoji = "❤️";
+                if (json.has("emoji")) {
+                    emoji = json.getString("emoji");
+                }
                 int stickerId = json.getInt("stickerId");
                 System.out.println(packId);
                 System.out.println(packKey);
@@ -1036,7 +1040,7 @@ public class Manager implements Closeable {
                             .withContentType("image/webp")
                             .withLength(tmpFile.length())
                             .build();
-                    SignalServiceDataMessage.Sticker sticker = new SignalServiceDataMessage.Sticker(packId, packKey, stickerId, "❤️", attachmentStream);
+                    SignalServiceDataMessage.Sticker sticker = new SignalServiceDataMessage.Sticker(packId, packKey, stickerId, emoji, attachmentStream);
                     messageBuilder.withSticker(sticker);
                     return sendMessage(messageBuilder, getSignalServiceAddresses(recipients));
                 } catch (InvalidMessageException e) {
