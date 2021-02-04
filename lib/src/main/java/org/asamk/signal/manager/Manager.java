@@ -1010,7 +1010,7 @@ public class Manager implements Closeable {
             JSONObject json = new JSONObject(messageText);
             System.out.println(json.has("type"));
             System.out.println(json.getString("type"));
-            if (json.getString("type") == "STICKER") {
+            if (json.has("type") && json.getString("type").equals("STICKER")) {
                 System.out.println(json.getString("packId"));
                 System.out.println(json.getString("packKey"));
                 System.out.println(json.getInt("stickerId"));
