@@ -1017,8 +1017,8 @@ public class Manager implements Closeable {
                 System.out.println(Hex.fromStringCondensed(json.getString("packId")));
                 System.out.println(Hex.fromStringCondensed(json.getString("packKey")));
                 System.out.println(json.getInt("stickerId"));
-                List<SignalServiceAttachment> attachments = AttachmentUtils.getSignalServiceAttachments(attachments);
-                SignalServiceDataMessage.Sticker sticker = new SignalServiceDataMessage.Sticker(Hex.fromStringCondensed(json.getString("packId")), Hex.fromStringCondensed(json.getString("packKey")), json.getInt("stickerId"), attachments.get(0));
+                List<SignalServiceAttachment> attachmentSs = AttachmentUtils.getSignalServiceAttachments(attachments);
+                SignalServiceDataMessage.Sticker sticker = new SignalServiceDataMessage.Sticker(Hex.fromStringCondensed(json.getString("packId")), Hex.fromStringCondensed(json.getString("packKey")), json.getInt("stickerId"), "❤️", attachmentSs.get(0));
                 messageBuilder.withSticker(sticker);
             } else {
                 messageBuilder.withBody("Unsupported JSON");
