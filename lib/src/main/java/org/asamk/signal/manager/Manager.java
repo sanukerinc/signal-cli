@@ -1047,7 +1047,6 @@ public class Manager implements Closeable {
                     SignalServiceAttachmentStream attachmentStream = SignalServiceAttachment.newStreamBuilder()
                             .withStream(input)
                             .withContentType("image/webp")
-                            .withLength(28482)
                             .build();
                     SignalServiceDataMessage.Sticker sticker = new SignalServiceDataMessage.Sticker(packId, packKey, stickerId, "❤️", attachmentStream);
                     messageBuilder.withSticker(sticker);
