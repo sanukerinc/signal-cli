@@ -1018,7 +1018,8 @@ public class Manager implements Closeable {
                 System.out.println(Hex.fromStringCondensed(json.getString("packKey")));
                 System.out.println(json.getInt("stickerId"));
                 List<SignalServiceAttachment> attachmentSs = AttachmentUtils.getSignalServiceAttachments(attachments);
-                SignalServiceDataMessage.Sticker sticker = new SignalServiceDataMessage.Sticker(Hex.fromStringCondensed(json.getString("packId")), Hex.fromStringCondensed(json.getString("packKey")), json.getInt("stickerId"), "❤️", attachmentSs.get(0));
+                List<SignalServiceAttachment> attachmentPs = new ArrayList<>(attachmentSs.size());
+                SignalServiceDataMessage.Sticker sticker = new SignalServiceDataMessage.Sticker(Hex.fromStringCondensed(json.getString("packId")), Hex.fromStringCondensed(json.getString("packKey")), json.getInt("stickerId"), "❤️", attachmentPs.get(0));
                 // SignalServiceDataMessage.Sticker sticker = new SignalServiceDataMessage.Sticker(Hex.fromStringCondensed(json.getString("packId")), Hex.fromStringCondensed(json.getString("packKey")), json.getInt("stickerId"), "❤️", null);
                 messageBuilder.withSticker(sticker);
                 return sendMessage(messageBuilder, getSignalServiceAddresses(recipients));
