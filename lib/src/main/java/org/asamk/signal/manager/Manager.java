@@ -1011,19 +1011,13 @@ public class Manager implements Closeable {
             System.out.println("is JSON");
             System.out.println(messageText);
             JSONObject json = new JSONObject(messageText);
-            System.out.println(json.has("type"));
-            System.out.println(json.getString("type"));
             if (json.has("type") && json.getString("type").equals("STICKER")) {
-                System.out.println(json.getString("packId"));
-                System.out.println(json.getString("packKey"));
-                System.out.println(json.getInt("stickerId"));
-                System.out.println(Hex.fromStringCondensed(json.getString("packId")));
-                System.out.println(Hex.fromStringCondensed(json.getString("packKey")));
-                System.out.println(json.getInt("stickerId"));
-
                 byte[] packId = Hex.fromStringCondensed(json.getString("packId"));
                 byte[] packKey = Hex.fromStringCondensed(json.getString("packKey"));
                 int stickerId = json.getInt("stickerId");
+                System.out.println(packId);
+                System.out.println(packKey);
+                System.out.println(stickerId);
 
                 File tmpFile = IOUtils.createTempFile();
                 try (InputStream input = messageReceiver.retrieveSticker(
@@ -1036,9 +1030,7 @@ public class Manager implements Closeable {
                     } catch (IOException e) {
                         logger.warn("copyStream error",
                         e.getMessage());
-                        // handle exception here
                     }
-                    // SignalServiceAttachmentStream attachmentStream = AttachmentUtils.createAttachment(tmpFile);
                     SignalServiceAttachmentStream attachmentStream = SignalServiceAttachment.newStreamBuilder()
                             .withStream(new FileInputStream(tmpFile))
                             .withContentType("image/webp")
@@ -1051,27 +1043,6 @@ public class Manager implements Closeable {
                     logger.warn("retrieveSticker error",
                         e.getMessage());
                 }
-
-                // File stickerFile = new File(attachments.get(0));
-                // byte[] fileContent = Files.readAllBytes(stickerFile.toPath());
-                // byte[] stickerFileContent = PushServiceSocket.retrieveSticker(Hex.fromStringCondensed(json.getString("packId")), json.getInt("stickerId"));
-                // File f = new File("test");
-                // Path path = Paths.get(f.getAbsolutePath());
-                // Files.write(path, stickerFileContent);
-                // SignalServiceAttachmentStream attachmentStream = AttachmentUtils.createAttachment(f);
-
-                // List<SignalServiceAttachment> attachmentSs = AttachmentUtils.getSignalServiceAttachments(attachments);
-                // SignalServiceAttachment firstAttachment = attachmentSs.get(0);
-                // List<SignalServiceAttachment> attachmentPs = new ArrayList<>(1);
-                // SignalServiceMessageSender mesSender = createMessageSender();
-                // if (firstAttachment.isStream()) {
-                //     System.out.println("isStream");
-                //     attachmentPs.add(mesSender.uploadAttachment(firstAttachment.asStream()));
-                // } else if (firstAttachment.isPointer()) {
-                //     System.out.println("isPointer");
-                //     attachmentPs.add(firstAttachment.asPointer());
-                // }
-                
             } else {
                 messageBuilder.withBody("Unsupported JSON");
             }
