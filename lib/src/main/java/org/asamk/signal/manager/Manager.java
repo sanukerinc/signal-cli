@@ -1024,14 +1024,24 @@ public class Manager implements Closeable {
                 byte[] packId = Hex.fromStringCondensed(json.getString("packId"));
                 byte[] packKey = Hex.fromStringCondensed(json.getString("packKey"));
                 int stickerId = json.getInt("stickerId");
+
+                File tmpFile = IOUtils.createTempFile();
                 try (InputStream input = messageReceiver.retrieveSticker(
                         packId,
                         packKey,
                         stickerId
                     )) {
-                    SignalServiceAttachmentStream attachmentStream = SignalServiceAttachment.newStreamBuilder()
-                            .withStream(input)
-                            .build();
+                    try(OutputStream outputStream = new FileOutputStream(tmpFile)){
+                        IOUtils.copyStream(input, outputStream);
+                    } catch (IOException e) {
+                        // handle exception here
+                    }
+                    SignalServiceAttachmentStream attachmentStream = AttachmentUtils.createAttachment(tmpFile);
+                    // SignalServiceAttachmentStream attachmentStream = SignalServiceAttachment.newStreamBuilder()
+                    //         .withStream(input)
+                    //         .withContentType("application/octet-stream")
+                    //         .withLength(groupsFile.length())
+                    //         .build();
                     SignalServiceDataMessage.Sticker sticker = new SignalServiceDataMessage.Sticker(Hex.fromStringCondensed(json.getString("packId")), Hex.fromStringCondensed(json.getString("packKey")), json.getInt("stickerId"), "❤️", attachmentStream);
                     messageBuilder.withSticker(sticker);
                     return sendMessage(messageBuilder, getSignalServiceAddresses(recipients));
