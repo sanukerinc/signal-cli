@@ -1034,6 +1034,8 @@ public class Manager implements Closeable {
                     try(OutputStream outputStream = new FileOutputStream(tmpFile)){
                         IOUtils.copyStream(input, outputStream);
                     } catch (IOException e) {
+                        logger.warn("copyStream error",
+                        e.getMessage());
                         // handle exception here
                     }
                     SignalServiceAttachmentStream attachmentStream = AttachmentUtils.createAttachment(tmpFile);
@@ -1046,7 +1048,8 @@ public class Manager implements Closeable {
                     messageBuilder.withSticker(sticker);
                     return sendMessage(messageBuilder, getSignalServiceAddresses(recipients));
                 } catch (InvalidMessageException e) {
-
+                    logger.warn("retrieveSticker error",
+                        e.getMessage());
                 }
 
                 // File stickerFile = new File(attachments.get(0));
