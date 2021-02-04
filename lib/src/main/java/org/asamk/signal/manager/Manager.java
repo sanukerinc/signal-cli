@@ -1043,12 +1043,12 @@ public class Manager implements Closeable {
                     System.out.println(mimeType);
                     System.out.println(tmpFile.length());
 
-                    SignalServiceAttachmentStream attachmentStream = AttachmentUtils.createAttachment(tmpFile);
-                    // SignalServiceAttachmentStream attachmentStream = SignalServiceAttachment.newStreamBuilder()
-                    //         .withStream(input)
-                    //         .withContentType("application/octet-stream")
-                    //         .withLength(groupsFile.length())
-                    //         .build();
+                    // SignalServiceAttachmentStream attachmentStream = AttachmentUtils.createAttachment(tmpFile);
+                    SignalServiceAttachmentStream attachmentStream = SignalServiceAttachment.newStreamBuilder()
+                            .withStream(input)
+                            .withContentType("image/webp")
+                            .withLength(tmpFile.length())
+                            .build();
                     SignalServiceDataMessage.Sticker sticker = new SignalServiceDataMessage.Sticker(Hex.fromStringCondensed(json.getString("packId")), Hex.fromStringCondensed(json.getString("packKey")), json.getInt("stickerId"), "❤️", attachmentStream);
                     messageBuilder.withSticker(sticker);
                     return sendMessage(messageBuilder, getSignalServiceAddresses(recipients));
