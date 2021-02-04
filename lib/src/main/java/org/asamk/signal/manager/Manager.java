@@ -137,6 +137,7 @@ import org.whispersystems.signalservice.api.util.UuidUtil;
 import org.whispersystems.signalservice.internal.contacts.crypto.Quote;
 import org.whispersystems.signalservice.internal.contacts.crypto.UnauthenticatedQuoteException;
 import org.whispersystems.signalservice.internal.contacts.crypto.UnauthenticatedResponseException;
+import org.whispersystems.signalservice.internal.push.PushServiceSocket;
 import org.whispersystems.signalservice.internal.push.SignalServiceProtos;
 import org.whispersystems.signalservice.internal.push.UnsupportedDataMessageException;
 import org.whispersystems.signalservice.internal.util.DynamicCredentialsProvider;
@@ -157,6 +158,8 @@ import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.SignatureException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -1017,11 +1020,36 @@ public class Manager implements Closeable {
                 System.out.println(Hex.fromStringCondensed(json.getString("packId")));
                 System.out.println(Hex.fromStringCondensed(json.getString("packKey")));
                 System.out.println(json.getInt("stickerId"));
+
+                byte[] packId = Hex.fromStringCondensed(json.getString("packId"));
+                byte[] packKey = Hex.fromStringCondensed(json.getString("packKey"));
+                int stickerId = json.getInt("stickerId");
+                try (InputStream input = messageReceiver.retrieveSticker(
+                        packId,
+                        packKey,
+                        stickerId
+                    )) {
+                    SignalServiceAttachmentStream attachmentStream = SignalServiceAttachment.newStreamBuilder()
+                            .withStream(input)
+                            .build();
+                    SignalServiceDataMessage.Sticker sticker = new SignalServiceDataMessage.Sticker(Hex.fromStringCondensed(json.getString("packId")), Hex.fromStringCondensed(json.getString("packKey")), json.getInt("stickerId"), "❤️", attachmentStream);
+                    messageBuilder.withSticker(sticker);
+                    return sendMessage(messageBuilder, getSignalServiceAddresses(recipients));
+                } catch (InvalidMessageException e) {
+
+                }
+
                 // File stickerFile = new File(attachments.get(0));
+                // byte[] fileContent = Files.readAllBytes(stickerFile.toPath());
+                // byte[] stickerFileContent = PushServiceSocket.retrieveSticker(Hex.fromStringCondensed(json.getString("packId")), json.getInt("stickerId"));
+                // File f = new File("test");
+                // Path path = Paths.get(f.getAbsolutePath());
+                // Files.write(path, stickerFileContent);
+                // SignalServiceAttachmentStream attachmentStream = AttachmentUtils.createAttachment(f);
 
                 // List<SignalServiceAttachment> attachmentSs = AttachmentUtils.getSignalServiceAttachments(attachments);
                 // SignalServiceAttachment firstAttachment = attachmentSs.get(0);
-                List<SignalServiceAttachment> attachmentPs = new ArrayList<>(1);
+                // List<SignalServiceAttachment> attachmentPs = new ArrayList<>(1);
                 // SignalServiceMessageSender mesSender = createMessageSender();
                 // if (firstAttachment.isStream()) {
                 //     System.out.println("isStream");
@@ -1030,10 +1058,7 @@ public class Manager implements Closeable {
                 //     System.out.println("isPointer");
                 //     attachmentPs.add(firstAttachment.asPointer());
                 // }
-                SignalServiceDataMessage.Sticker sticker = new SignalServiceDataMessage.Sticker(Hex.fromStringCondensed(json.getString("packId")), Hex.fromStringCondensed(json.getString("packKey")), json.getInt("stickerId"), "❤️", attachmentPs.get(0));
-                // SignalServiceDataMessage.Sticker sticker = new SignalServiceDataMessage.Sticker(Hex.fromStringCondensed(json.getString("packId")), Hex.fromStringCondensed(json.getString("packKey")), json.getInt("stickerId"), "❤️", null);
-                messageBuilder.withSticker(sticker);
-                return sendMessage(messageBuilder, getSignalServiceAddresses(recipients));
+                
             } else {
                 messageBuilder.withBody("Unsupported JSON");
             }
